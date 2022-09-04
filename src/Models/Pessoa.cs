@@ -24,7 +24,7 @@ public class Pessoa
     }
 
     // Introduçaõ de lista de atributos: nome, idade, cpf, ativa
-    public int id { get; set; }
+    public int Id { get; set; }
     public string Nome {get; set;}
     public int Idade { get; set; }
 
