@@ -28,7 +28,6 @@ public class DatabaseContext : DbContext
         // model create para tabelas executaveis
         // 
         //  construir uma entidade aprtir de pessoa
-        // 
         builder.Entity<Pessoa>(tabela =>{
             tabela.HasKey(e => e.Id);
              tabela

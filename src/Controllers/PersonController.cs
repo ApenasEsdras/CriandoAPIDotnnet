@@ -1,8 +1,13 @@
 // declara sobre o tipo de serviço vou usar
 using Microsoft.AspNetCore.Mvc;
+using  Microsoft.EntityFrameworkCore;
+// LIberar o statusCode
+using System.Net;
+
+// eu criei estes abaixo
 using src.Models;   
 using src.Persistence;
-using  Microsoft.EntityFrameworkCore;
+
 
 // Declara endereço de memoria virtual
 namespace src.Controllers;
@@ -49,33 +54,80 @@ public ActionResult<List<Pessoa>>Get(){
 
 [HttpPost]
 //  No modulo abaixo temos (Pessoa = modelo; pessoa = Variavel)
-public Pessoa Post([FromBody]Pessoa pessoa){
+public ActionResult<Pessoa> Post([FromBody]Pessoa pessoa){
+
+    try
+    {
     // addc
     _context.Pessoas.Add(pessoa);
     // salvar
     _context.SaveChanges();
-    // retornar
-    return pessoa;
+    }
+    catch (System.Exception)
+    {
+        return BadRequest();
+    }
+    // retorn ar
+    return Created("criado", pessoa);
 }
 
 [HttpPut("{id}")]
-public string Updata([FromRoute]int id, [FromBody]Pessoa pessoa){
-    // Salvar dados direto no banco de dados
-    _context.Pessoas.Update(pessoa);
-    _context.SaveChanges();
+public ActionResult<Object> Updata(
+    [FromRoute]int id, 
+    [FromBody]Pessoa pessoa
+    )
+ {
+
+    var result = _context.Pessoas.SingleOrDefault(e => e.Id ==id);
+
+    if(result is null){
+        return NotFound(new{
+            msg = "Registro não encontrado",
+            status = HttpStatusCode.NotFound
+        });
+    }
+    // Analise de erro
+    try
+    {
+        // Salvar dados direto no banco de dados
+        _context.Pessoas.Update(pessoa);
+        _context.SaveChanges();
+ 
+    }
+    catch (System.Exception)
+    { 
+        return BadRequest(new{
+        msg = "Erra na soliciatçaõ de atualização do " + id + " Atualizado",
+        status = HttpStatusCode.OK
+      });
+    }
 
     // para exibir no localHost
     // Console.WriteLine(id);
     // Console.WriteLine(pessoa);
-    return "Dados do id " + id + " Atualizado";
+    return Ok(new{
+        msg = "Dados do id " + id + " Atualizado",
+        status = HttpStatusCode.OK
+      });
 }
 
 [HttpDelete("{id}")]
-public string Delete([FromRoute]int id){
+public ActionResult<Object > Delete([FromRoute]int id){
     var result = _context.Pessoas.SingleOrDefault(e => e.Id ==id);
 
+// condicional pra retornar status 400 do dalad o cliente
+    if(result is null){
+        return BadRequest(new{
+            msg = "Conteudo Invalido, solicitação invalida",
+            status = HttpStatusCode.BadRequest
+        });
+    }
     _context.Pessoas.Remove(result);
     _context.SaveChanges();
-    return "Delete pessoa com id" + id;
+
+    return Ok(new{
+        msg = "Delete pessoa com id" + id,
+        status = HttpStatusCode.OK
+      });
 }                             
 }

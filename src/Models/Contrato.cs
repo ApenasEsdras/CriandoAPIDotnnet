@@ -14,7 +14,7 @@ public class Contrato
         this.DataCriacao = DateTime.Now;
         this.TokenId = TokenID;
         this.Valor = Valor;
-         this.Pago = false;
+        this.Pago = false;
     }
 
     // prop = Propriedades da API
