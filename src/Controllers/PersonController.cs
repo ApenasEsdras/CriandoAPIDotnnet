@@ -38,8 +38,11 @@ this._context = context;
 // }
 
 // criar uam lista de pessas no banco de dados
-public List<Pessoa>Get(){
-     return _context.Pessoas.Include(p => p.contratos).ToList();
+public ActionResult<List<Pessoa>>Get(){
+    var result = _context.Pessoas.Include(p => p.contratos).ToList();
+    // sera executado quando nãi ouver nenehum conteudo
+    if(!result.Any()) return NoContent();
+     return  Ok(result);
 }
 
 // enciar dados para o servidor, possivel de auteração externa
@@ -69,11 +72,10 @@ public string Updata([FromRoute]int id, [FromBody]Pessoa pessoa){
 
 [HttpDelete("{id}")]
 public string Delete([FromRoute]int id){
-    var reuslt = _context.Pessoas.SingleOrDefault(e => e.Id ==id);
+    var result = _context.Pessoas.SingleOrDefault(e => e.Id ==id);
 
-    _context.Pessoas.Remove(reuslt);
+    _context.Pessoas.Remove(result);
     _context.SaveChanges();
     return "Delete pessoa com id" + id;
-}
-
+}                             
 }
